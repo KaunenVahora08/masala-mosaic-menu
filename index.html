@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Masala Mosaic Digital Menu</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        /* Hide scrollbar for category navigation */
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+    </style>
+    
+    <script>
+        // --- 1. TAILWIND CONFIGURATION FOR MASALA MOSAIC THEME ---
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'background': '#0B1C2B', // Deep Navy Blue (Main Base)
+                        'muted': '#122B3F', // Midnight Blue (Section Backgrounds/Hero)
+                        'taupe': '#2E4457', // Steel Blue (Structural Borders/Hover BG)
+                        'card': '#122B3F', // Midnight Blue (Card background)
+
+                        'primary': '#E8D6BC', // Soft Cream Beige (Main Text/Headers)
+                        'secondary': '#D7BE9B', // Warm Sand (Primary Action/Buttons/Accent)
+                        'accent': '#F3E7D3', // Pale Ivory (Brightest Accent/Badge)
+                        
+                        'card-foreground': '#E8D6BC', // Soft Cream Beige (Card Text)
+                        'muted-foreground': '#D7BE9B', // Warm Sand (Secondary Text/Placeholder)
+                    },
+                    fontFamily: {
+                        serif: ['Georgia', 'serif'],
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                },
+            },
+        };
+
+        // --- 2. MENU DATA (Large Dataset) ---
+        const MENU_DATA = {
+            "Starters (30 items)": [
+                { name: "Paneer Tikka", price: 480 }, { name: "Hara Bhara Kebab", price: 420 }, { name: "Dahi Ke Kebab", price: 450 },
+                { name: "Aloo Tikki Chaat", price: 380 }, { name: "Rajma Galouti Kebab", price: 460 }, { name: "Vegetable Seekh Kebab", price: 420 },
+                { name: "Corn and Spinach Tikki", price: 400 }, { name: "Bharwan Mushroom Tandoori", price: 480 }, { name: "Paneer Malai Tikka", price: 500 },
+                { name: "Veg Pakora Platter", price: 350 }, { name: "Samosa (Vegetable, 2 pcs)", price: 280 }, { name: "Onion Bhaji", price: 300 },
+                { name: "Moong Dal Chilla Rolls", price: 360 }, { name: "Dhokla", price: 320 }, { name: "Patra (Alu Vadi)", price: 340 },
+                { name: "Khandvi", price: 320 }, { name: "Pani Puri", price: 300 }, { name: "Sev Puri", price: 300 },
+                { name: "Dahi Puri", price: 320 }, { name: "Bhel Puri", price: 300 }, { name: "Pav Bhaji Mini Buns", price: 360 },
+                { name: "Batata Vada", price: 320 }, { name: "Chole Kulcha Mini", price: 380 }, { name: "Paneer 65", price: 460 },
+                { name: "Gobi 65", price: 420 }, { name: "Chilli Paneer Dry", price: 480 }, { name: "Vegetable Spring Roll (Indo-Chinese)", price: 420 },
+                { name: "Mushroom Pepper Fry", price: 480 }, { name: "Masala Peanuts", price: 280 }, { name: "Sabudana Vada", price: 360 },
+            ],
+            "Soups (10 items)": [
+                { name: "Tamatar Shorba", price: 220 }, 
+                { name: "Dal Shorba", price: 250 }, 
+                { name: "Sweet Corn Soup (Veg)", price: 320 },
+                { name: "Hot and Sour Soup (Veg)", price: 340 },
+                { name: "Tomato Basil Rasam", price: 280 },
+                { name: "Lemon Coriander Soup", price: 320 },
+                { name: "Mulligatawny Soup", price: 360 },
+                { name: "Chicken Shorba", price: 420 },
+                { name: "Hot and Sour Soup (Chicken)", price: 440 },
+                { name: "Mutton Paya Soup", price: 520 },
+            ],
+            "Vegetarian Mains (30 items)": [
+                { name: "Paneer Butter Masala", price: 640 }, { name: "Kadai Paneer", price: 620 }, { name: "Shahi Paneer", price: 660 },
+                { name: "Palak Paneer", price: 620 }, { name: "Matar Paneer", price: 600 }, { name: "Malai Kofta", price: 640 },
+                { name: "Navratan Korma", price: 660 }, { name: "Veg Jalfrezi", price: 600 }, { name: "Dum Aloo Kashmiri", price: 580 },
+                { name: "Baingan Bharta", price: 560 }, { name: "Bhindi Masala", price: 560 }, { name: "Aloo Jeera", price: 520 },
+                { name: "Aloo Gobi", price: 540 }, { name: "Chole Masala", price: 580 }, { name: "Rajma Masala", price: 580 },
+                { name: "Dal Makhani", price: 640 }, { name: "Dal Tadka", price: 540 }, { name: "Moong Dal Fry", price: 520 },
+                { name: "Lauki Kofta", price: 580 }, { name: "Kathal Curry", price: 600 }, { name: "Paneer Lababdar", price: 660 },
+                { name: "Tawa Vegetables", price: 600 }, { name: "Veg Kolhapuri", price: 620 }, { name: "Gatte Ki Sabzi", price: 560 },
+                { name: "Undhiyu", price: 660 }, { name: "Gujarati Dal", price: 520 }, { name: "Kadhi Pakora", price: 540 },
+                { name: "Kadhi Gujarati", price: 520 }, { name: "Tamatar Sev Sabzi", price: 500 }, { name: "Chana Palak", price: 580 },
+            ],
+            "Non-Vegetarian Mains (30 items)": [
+                { name: "Butter Chicken", price: 780 }, { name: "Chicken Tikka Masala", price: 760 }, { name: "Kadai Chicken", price: 740 },
+                { name: "Chicken Curry (North Indian style)", price: 700 }, { name: "Chicken Chettinad", price: 760 }, { name: "Chicken Handi", price: 740 },
+                { name: "Chicken Do Pyaza", price: 720 }, { name: "Chicken Saagwala", price: 740 }, { name: "Chicken Korma", price: 760 },
+                { name: "Chicken Vindaloo", price: 780 }, { name: "Chicken Madras", price: 760 }, { name: "Chicken Kolhapuri", price: 780 },
+                { name: "Mutton Rogan Josh", price: 880 }, { name: "Mutton Korma", price: 900 }, { name: "Mutton Curry (Dhaba style)", price: 820 },
+                { name: "Mutton Keema Masala", price: 860 }, { name: "Mutton Vindaloo", price: 880 }, { name: "Mutton Saagwala", price: 860 },
+                { name: "Mutton Bhuna", price: 900 }, { name: "Mutton Nihari", price: 960 }, { name: "Fish Curry (Goan)", price: 820 },
+                { name: "Fish Tikka Masala", price: 860 }, { name: "Fish Malabari Curry", price: 880 }, { name: "Prawn Masala", price: 940 },
+                { name: "Prawn Koliwada Curry", price: 960 }, { name: "Prawn Chettinad", price: 980 }, { name: "Egg Curry Masala", price: 540 },
+                { name: "Egg Bhurji Masala", price: 520 }, { name: "Egg Korma", price: 560 }, { name: "Egg Vindaloo", price: 580 },
+            ],
+            "Rice & Biryani (10 items)": [
+                { name: "Steamed Basmati Rice", price: 300 }, { name: "Jeera Rice", price: 340 }, { name: "Peas Pulao", price: 360 },
+                { name: "Veg Pulao", price: 380 }, { name: "Kashmiri Pulao", price: 420 }, { name: "Curd Rice", price: 340 },
+                { name: "Chicken Biryani (Dum)", price: 780 }, { name: "Mutton Biryani (Dum)", price: 880 }, { name: "Veg Biryani (Dum)", price: 660 },
+                { name: "Egg Biryani (Dum)", price: 620 },
+            ],
+            "Breads (15 items)": [
+                { name: "Tandoori Roti", price: 70 }, 
+                { name: "Butter Roti", price: 90 }, 
+                { name: "Plain Naan", price: 120 },
+                { name: "Butter Naan", price: 140 },
+                { name: "Garlic Naan", price: 160 },
+                { name: "Cheese Naan", price: 180 }, 
+                { name: "Peshwari Naan", price: 150 }, 
+                { name: "Stuffed Kulcha (Onion)", price: 160 },
+                { name: "Stuffed Kulcha (Paneer)", price: 180 }, 
+                { name: "Aloo Paratha", price: 160 },
+                { name: "Laccha Paratha", price: 160 },
+                { name: "Missi Roti", price: 140 },
+                { name: "Roomali Roti", price: 120 },
+                { name: "Bajra Roti", price: 140 },
+                { name: "Makki Ki Roti", price: 140 },
+            ],
+            "Accompaniments (10 items)": [
+                { name: "Green Salad", price: 220 }, { name: "Kachumber Salad", price: 240 }, { name: "Raita (Boondi)", price: 220 },
+                { name: "Raita (Cucumber)", price: 240 }, { name: "Raita (Mixed Veg)", price: 240 }, { name: "Papad (Roasted/Fried)", price: 100 },
+                { name: "Pickle Selection", price: 120 }, { name: "Mint Chutney", price: 100 }, { name: "Tamarind Chutney", price: 100 },
+                { name: "Onion Laccha", price: 140 },
+            ],
+            "Desserts (15 items)": [
+                { name: "Gulab Jamun", price: 280 }, { name: "Rasgulla", price: 280 }, { name: "Rasmalai", price: 320 },
+                { name: "Malpua with Rabri", price: 360 }, { name: "Jalebi with Rabri", price: 340 }, { name: "Kaju Katli", price: 360 },
+                { name: "Besan Ladoo", price: 300 }, { name: "Gajar Halwa", price: 340 }, { name: "Moong Dal Halwa", price: 360 },
+                { name: "Suji Halwa", price: 300 }, { name: "Kheer (Rice Pudding)", price: 320 }, { name: "Phirni", price: 340 },
+                { name: "Kulfi (Malai)", price: 340 }, { name: "Kulfi Falooda", price: 380 }, { name: "Ice Cream (Seasonal Indian Flavours)", price: 360 },
+            ]
+        };
+
+        // --- 3. STATE MANAGEMENT AND RENDERING ---
+        let searchTerm = "";
+        let isMenuOpen = false;
+
+        // Utility to generate a descriptive text for a menu item
+        function getDescription(itemName, category) {
+            if (itemName.includes('Butter Chicken')) return "Indulge in our succulent Butter Chicken, slow-cooked in a rich tomato gravy.";
+            if (itemName.includes('Rogan Josh')) return "Experience the depth of flavors in our Rogan Josh, cooked to perfection with aromatic spices.";
+            if (itemName.includes('Paneer Tikka')) return "Cubes of fresh cottage cheese marinated in spiced yogurt and grilled to perfection in the tandoor.";
+            if (category.includes('Biryani')) return "Aromatic basmati rice cooked with tender meat/vegetables and exotic spices, served Dum style.";
+            if (category.includes('Starters')) return "An exquisite starter crafted with authentic Indian spices, setting the perfect tone for your meal.";
+            return `A masterpiece from the ${category.split('(')[0].trim()} selection, crafted with passion and traditional Indian techniques.`;
+        }
+        
+        // Function to render the entire application
+        function render() {
+            const app = document.getElementById('app');
+            if (!app) return;
+
+            const filteredMenuData = getFilteredMenuData(searchTerm);
+
+            app.innerHTML = `
+                ${renderNavbar()}
+                <main class="container mx-auto px-4 py-8 max-w-7xl">
+                    ${renderHero()}
+                    ${renderMenuSection(filteredMenuData)}
+                    ${renderAboutSection()}
+                    ${renderContactSection()}
+                </main>
+                ${renderFooter()}
+            `;
+            
+            // Re-attach event listeners after rendering
+            attachEventListeners();
+            
+            // Re-render icons after adding new content
+            if (window.lucide) {
+                window.lucide.createIcons();
+            }
+        }
+
+        // Filters the menu data based on the search term
+        function getFilteredMenuData(term) {
+            if (!term) return MENU_DATA;
+            const lowerSearchTerm = term.toLowerCase();
+            
+            const results = {};
+            let found = false;
+
+            for (const [category, items] of Object.entries(MENU_DATA)) {
+                const filteredItems = items.filter(item =>
+                    item.name.toLowerCase().includes(lowerSearchTerm)
+                );
+                if (filteredItems.length > 0) {
+                    results[category] = filteredItems;
+                    found = true;
+                }
+            }
+
+            if (!found) return { "No Results Found": [] };
+
+            return results;
+        }
+
+
+        // --- 4. RENDERER FUNCTIONS ---
+
+        function renderNavbar() {
+            const navItems = [
+                { name: 'Menu', href: '#menu' },
+                { name: 'About', href: '#about' },
+                { name: 'Contact', href: '#contact' },
+            ];
+
+            return `
+                <header class="sticky top-0 z-40 w-full border-b border-taupe/30 bg-background/90 backdrop-blur-sm shadow-xl shadow-black/50">
+                    <div class="container mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
+                        <a href="#" class="text-3xl font-serif font-extrabold text-primary tracking-wider transition-colors hover:text-secondary">
+                            Masala Mosaic
+                        </a>
+
+                        <!-- Desktop Nav -->
+                        <nav class="hidden md:flex items-center space-x-8">
+                            ${navItems.map(item => `
+                                <a href="${item.href}" class="text-primary hover:text-secondary font-semibold text-lg transition-colors">
+                                    ${item.name}
+                                </a>
+                            `).join('')}
+                        </nav>
+
+                        <!-- Mobile Toggle -->
+                        <button id="menu-toggle-btn" class="p-2 rounded-md hover:bg-taupe transition-colors md:hidden">
+                            <i data-lucide="menu" class="h-6 w-6 text-primary"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Mobile Menu -->
+                    <div id="mobile-menu" class="${isMenuOpen ? 'block' : 'hidden'} md:hidden border-t border-taupe bg-muted shadow-lg absolute w-full">
+                        ${navItems.map(item => `
+                            <a href="${item.href}" class="block px-4 py-3 text-primary hover:bg-taupe font-medium transition-colors" onclick="toggleMenu(false)">
+                                ${item.name}
+                            </a>
+                        `).join('')}
+                    </div>
+                </header>
+            `;
+        }
+
+        function renderHero() {
+            return `
+                <section class="mb-12 rounded-xl overflow-hidden shadow-2xl shadow-black/70 bg-muted border border-taupe/50">
+                    <div class="p-6 md:p-12 text-center">
+                        <div class="inline-block bg-secondary text-background font-bold text-sm px-4 py-1 rounded-full mb-4 shadow-md">
+                            Welcome to Our Digital Menu
+                        </div>
+                        <h2 class="text-4xl md:text-6xl font-serif font-bold text-accent mb-4 leading-tight">
+                            A Culinary Journey Through India
+                        </h2>
+                        <p class="text-lg md:text-xl text-primary max-w-3xl mx-auto">
+                            Explore the vibrant, authentic flavors of Masala Mosaic. From robust curries to delicate tandoor breads, find your perfect meal.
+                        </p>
+                    </div>
+                </section>
+            `;
+        }
+
+        function renderSearchBar() {
+            return `
+                <div class="mb-10 p-4 bg-muted border border-taupe rounded-xl shadow-inner shadow-black/50 sticky top-16 md:top-20 z-30">
+                    <div class="relative flex items-center">
+                        <i data-lucide="search" class="h-5 w-5 absolute left-3 text-muted-foreground"></i>
+                        <input
+                            type="text"
+                            id="search-input"
+                            placeholder="Search 150+ dishes (e.g., 'Aloo Gobi', 'Biryani')"
+                            value="${searchTerm}"
+                            oninput="updateSearchTerm(this.value)"
+                            class="w-full pl-10 pr-4 py-3 text-lg bg-card text-primary rounded-lg border-2 border-taupe focus:border-secondary focus:ring-secondary focus:ring-1 transition-all duration-200 placeholder:text-muted-foreground"
+                        />
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderCategoryNavigation(categories) {
+             return `
+                <div class="sticky top-32 md:top-20 z-20 bg-muted/95 backdrop-blur-sm py-3 mb-8 border-b-2 border-secondary/50 overflow-x-auto whitespace-nowrap scrollbar-hide shadow-lg shadow-black/30">
+                    <div class="max-w-7xl mx-auto flex space-x-6 px-4">
+                        ${Object.keys(categories).map((cat) => {
+                            // Slugify category name for anchor links
+                            const slug = cat.split('(')[0].trim().replace(/\s/g, '-');
+                            return `
+                                <a
+                                    href="#${slug}" 
+                                    class="pb-2 text-sm md:text-base font-semibold text-muted-foreground hover:text-secondary transition-colors border-b-2 border-transparent hover:border-secondary/50 flex-shrink-0"
+                                >
+                                    ${cat.split('(')[0].trim()}
+                                </a>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+        }
+        
+        function renderMenuItem(item, category) {
+            const { name, price } = item;
+            
+            // Simple check for Non-Vegetarian items
+            const isNonVeg = category.includes('Non-Vegetarian') 
+                || item.name.toLowerCase().includes('chicken')
+                || item.name.toLowerCase().includes('mutton')
+                || item.name.toLowerCase().includes('fish')
+                || item.name.toLowerCase().includes('prawn')
+                || item.name.toLowerCase().includes('egg'); 
+            
+            const borderColor = isNonVeg ? 'border-red-600' : 'border-green-600'; 
+            const tagIcon = isNonVeg ? '🌶️' : '🌱';
+            
+            const description = getDescription(name, category);
+            
+            return `
+                <div class="relative p-5 bg-card rounded-xl shadow-xl border-l-4 ${borderColor} hover:shadow-secondary/50 transition-all duration-300 transform hover:scale-[1.02] border-opacity-70">
+                    
+                    <div class="flex justify-between items-start mb-3">
+                        <h3 class="text-xl font-bold text-card-foreground pr-4 leading-snug">${name}</h3>
+                        
+                        <div class="text-right flex-shrink-0">
+                            <p class="text-3xl font-extrabold text-secondary whitespace-nowrap">₹${price}</p>
+                            <p class="text-xs text-muted-foreground mt-0.5">${tagIcon} ${isNonVeg ? 'Non-Veg' : 'Veg'}</p>
+                        </div>
+                    </div>
+                    
+                    <p class="text-sm text-muted-foreground mb-4 italic line-clamp-2">
+                        ${description}
+                    </p>
+
+                    <!-- Static action prompt for physical menu interaction -->
+                    <div class="w-full flex items-center justify-center space-x-2 py-3 px-4 bg-taupe/50 text-muted-foreground font-semibold rounded-lg shadow-inner">
+                        <span>Tap to Order (Physical Terminal)</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderMenuSection(menuData) {
+            if (Object.keys(menuData).length === 0 && searchTerm) {
+                 return `
+                    <section id="menu" class="pt-8">
+                        <div class="text-center p-12 bg-muted rounded-xl border border-taupe shadow-lg">
+                            <i data-lucide="frown" class="w-12 h-12 mx-auto text-secondary mb-4"></i>
+                            <h3 class="text-3xl font-bold text-primary">No Results Found</h3>
+                            <p class="text-muted-foreground mt-2">Try searching for a different dish or checking your spelling.</p>
+                        </div>
+                    </section>
+                `;
+            }
+
+            return `
+                <section id="menu" class="scroll-mt-16">
+                    <h2 class="text-4xl md:text-5xl font-serif font-bold text-primary text-center mb-12">Our Culinary Offerings</h2>
+                    
+                    ${renderSearchBar()}
+                    ${renderCategoryNavigation(MENU_DATA)}
+                    
+                    ${Object.entries(menuData).map(([category, items]) => {
+                        // Slugify category name for anchor links
+                        const slug = category.split('(')[0].trim().replace(/\s/g, '-');
+                        return `
+                            <div class="mb-16 scroll-mt-20" id="${slug}">
+                                <h3 class="text-3xl font-bold text-accent border-l-4 border-secondary pl-4 mb-8">
+                                    ${category.split('(')[0].trim()}
+                                    <span class="text-lg font-normal text-muted-foreground">(${items.length} dishes)</span>
+                                </h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                                    ${items.map(item => renderMenuItem(item, category)).join('')}
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </section>
+            `;
+        }
+
+        function renderAboutSection() {
+            return `
+                <section id="about" class="pt-20 pb-12 scroll-mt-16">
+                    <div class="bg-muted p-8 md:p-12 rounded-xl shadow-2xl border-t-4 border-secondary/70">
+                        <h2 class="text-4xl font-serif font-bold text-accent text-center mb-6">Our Story</h2>
+                        <p class="text-primary text-lg leading-relaxed mb-4">
+                            Masala Mosaic is more than just a restaurant; it's a celebration of Indian heritage and global quality. We pride ourselves on using the freshest, locally sourced ingredients combined with authentic, time-honored recipes passed down through generations.
+                        </p>
+                        <p class="text-muted-foreground text-md leading-relaxed">
+                            Our culinary philosophy centers on balancing traditional regional tastes—from the rich Mughlai gravies of the North to the delicate coconut-based curries of the South—with a commitment to modern dining excellence. Every dish is a mosaic of flavors, crafted with passion and presented beautifully.
+                        </p>
+                        <div class="mt-6 flex justify-center space-x-4 text-secondary">
+                             <i data-lucide="award" class="w-8 h-8"></i>
+                             <i data-lucide="chef-hat" class="w-8 h-8"></i>
+                             <i data-lucide="smile" class="w-8 h-8"></i>
+                        </div>
+                    </div>
+                </section>
+            `;
+        }
+
+        function renderContactSection() {
+            return `
+                <section id="contact" class="pt-20 pb-12 scroll-mt-16">
+                    <h2 class="text-4xl font-serif font-bold text-primary text-center mb-10">Visit & Contact</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        
+                        <!-- Location Card -->
+                        <div class="bg-card p-6 rounded-xl shadow-xl border border-taupe space-y-4 md:col-span-2">
+                            <h3 class="text-2xl font-bold text-accent flex items-center">
+                                <i data-lucide="map-pin" class="w-6 h-6 mr-2 text-secondary"></i> Location
+                            </h3>
+                            <address class="not-italic text-primary">
+                                <p class="font-semibold">Masala Mosaic Grand Palace</p>
+                                <p>123 Spice Route, Culinary District</p>
+                                <p>Mumbai, Maharashtra 400001</p>
+                            </address>
+                            <a href="tel:+919876543210" class="inline-flex items-center text-secondary hover:text-accent transition-colors">
+                                <i data-lucide="phone" class="w-4 h-4 mr-2"></i> +91 9876 543 210
+                            </a>
+                        </div>
+
+                        <!-- Hours Card -->
+                        <div class="bg-card p-6 rounded-xl shadow-xl border border-taupe space-y-4">
+                            <h3 class="text-2xl font-bold text-accent flex items-center">
+                                <i data-lucide="clock" class="w-6 h-6 mr-2 text-secondary"></i> Hours
+                            </h3>
+                            <ul class="text-primary space-y-1">
+                                <li>Lunch: 12:00 PM – 3:00 PM</li>
+                                <li>Dinner: 7:00 PM – 11:00 PM</li>
+                                <li class="text-secondary font-semibold mt-2">Open Daily</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+            `;
+        }
+        
+        function renderFooter() {
+            return `
+                <footer class="bg-taupe p-8 mt-12 text-center text-sm text-background">
+                    <p>&copy; ${new Date().getFullYear()} Masala Mosaic. All Rights Reserved. | Digital Menu System</p>
+                    <div class="mt-4 flex justify-center space-x-4">
+                        <a href="#menu" class="hover:text-primary transition-colors">Menu</a>
+                        <a href="#about" class="hover:text-primary transition-colors">About</a>
+                        <a href="#contact" class="hover:text-primary transition-colors">Contact</a>
+                    </div>
+                </footer>
+            `;
+        }
+
+
+        // --- 5. EVENT HANDLERS ---
+        
+        function toggleMenu(forceState = null) {
+            if (forceState !== null) {
+                isMenuOpen = forceState;
+            } else {
+                isMenuOpen = !isMenuOpen;
+            }
+            render();
+        }
+
+        function updateSearchTerm(value) {
+            searchTerm = value;
+            // Debounce the render call slightly for performance
+            clearTimeout(window.searchTimer);
+            window.searchTimer = setTimeout(render, 100); 
+        }
+
+        function attachEventListeners() {
+            // Mobile Menu Toggle
+            const menuBtn = document.getElementById('menu-toggle-btn');
+            if (menuBtn) {
+                menuBtn.onclick = () => toggleMenu();
+            }
+        }
+
+        // --- 6. INITIALIZATION ---
+        window.onload = function() {
+            render();
+        };
+
+    </script>
+</head>
+<body class="bg-background min-h-screen font-sans text-primary">
+    <!-- Main App Container -->
+    <div id="app">
+        <!-- Content will be rendered here by JavaScript -->
+    </div>
+</body>
+</html>
